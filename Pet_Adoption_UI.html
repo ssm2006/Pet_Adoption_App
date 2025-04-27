@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Adoption App UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles based on the report's style guide */
+        body {
+            font-family: 'Roboto', sans-serif; /* Body text font */
+            background-color: #f4f4f4; /* Light grey background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top for desktop */
+            min-height: 100vh;
+        }
+        .app-container {
+            background-color: #ffffff; /* White background for the app frame */
+            border-radius: 12px; /* Rounded corners for the app frame */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            overflow: hidden; /* Hide overflow from rounded corners */
+            width: 100%;
+            max-width: 375px; /* Typical mobile width */
+            height: 100vh; /* Full viewport height on mobile */
+            display: flex;
+            flex-direction: column;
+
+            /* --- Desktop Styles --- */
+            @media (min-width: 768px) { /* Apply styles from medium screens upwards */
+                max-width: 1200px; /* Wider container for desktop */
+                height: 90vh; /* Slightly less than full height */
+                margin-top: 20px; /* Add some top margin */
+                margin-bottom: 20px; /* Add some bottom margin */
+                flex-direction: row; /* Arrange content side-by-side */
+            }
+        }
+        .screen {
+            width: 100%;
+            height: 100%;
+            display: none; /* Hide screens by default */
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto; /* Enable scrolling for long content */
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 padding: 30px; /* More padding on desktop */
+                 /* Adjust width based on layout strategy - handled by parent flex/grid */
+            }
+        }
+        .screen.active {
+            display: flex; /* Show the active screen */
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 flex-grow: 1; /* Allow active screen to take available space */
+            }
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            background-color: #ffffff;
+            flex-shrink: 0; /* Prevent header from shrinking */
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 padding: 20px 30px; /* More padding */
+                 border-bottom: none; /* Remove bottom border if sidebar is used */
+                 justify-content: flex-start; /* Align items to the start */
+                 gap: 20px; /* Space between header elements */
+            }
+        }
+        .header h1 {
+            font-family: 'Montserrat', sans-serif; /* Heading font */
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #6d28d9; /* A shade of purple */
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1.8em; /* Larger heading on desktop */
+            }
+        }
+        .header .icon {
+            font-size: 1.2em;
+            color: #6d28d9; /* Purple icons */
+            cursor: pointer;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1.5em; /* Larger icons */
+            }
+        }
+        .btn-primary {
+            background-color: #a78bfa; /* Purple button color */
+            color: white;
+            font-family: 'Open Sans', sans-serif; /* Button font */
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #8b5cf6; /* Darker purple on hover */
+        }
+        .input-field {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                padding: 12px 20px; /* More padding */
+                font-size: 1.1em; /* Larger font */
+            }
+        }
+         .link-text {
+            color: #a78bfa; /* Purple link color */
+            text-decoration: none;
+            text-align: center;
+            display: block;
+            font-size: 0.9em;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1em;
+            }
+        }
+        .separator {
+            text-align: center;
+            margin: 20px 0;
+            color: #888;
+            font-size: 0.9em;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 margin: 30px 0;
+                 font-size: 1em;
+            }
+        }
+        .social-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .social-button {
+             flex-grow: 1;
+             padding: 12px 0;
+             border: 1px solid #ccc;
+             border-radius: 8px;
+             text-align: center;
+             cursor: pointer;
+             background-color: #fff;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 padding: 15px 0;
+                 font-size: 1.1em;
+            }
+        }
+        .social-button .icon {
+             margin-right: 8px;
+             color: #6d28d9;
+        }
+        .navigation-bar {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #eee;
+            padding: 10px 0;
+            background-color: #ffffff;
+            flex-shrink: 0; /* Prevent nav bar from shrinking */
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 display: none; /* Hide bottom nav bar on desktop */
+            }
+        }
+        .navigation-item {
+            text-align: center;
+            color: #888; /* Default color for nav items */
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+         .navigation-item.active {
+            color: #a78bfa; /* Purple for active nav item */
+            font-weight: 600;
+        }
+
+        /* --- Desktop Sidebar Navigation --- */
+        .sidebar-nav {
+            width: 250px; /* Fixed width for sidebar */
+            background-color: #ffffff;
+            border-right: 1px solid #eee;
+            padding: 20px;
+            flex-direction: column;
+            gap: 15px;
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            display: none; /* Hidden by default */
+
+            @media (min-width: 768px) {
+                 display: flex; /* Show sidebar on desktop */
+            }
+        }
+        .sidebar-nav .nav-item {
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #555;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+         .sidebar-nav .nav-item:hover {
+             background-color: #f4f4f4;
+         }
+        .sidebar-nav .nav-item.active {
+            background-color: #a78bfa;
+            color: white;
+            font-weight: 600;
+        }
+
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #6d28d9;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1.4em;
+                 margin-top: 30px;
+                 margin-bottom: 15px;
+            }
+        }
+        .pet-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+        }
+         /* Desktop grid for pet cards */
+        .pet-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid */
+        }
+
+        .pet-card .pet-image-placeholder {
+            width: 100%;
+            height: 150px;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #555;
+            font-size: 0.9em;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 height: 200px; /* Taller images on desktop */
+            }
+        }
+        .pet-card h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #333;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1.3em;
+            }
+        }
+        .pet-card p {
+            font-size: 0.9em;
+            color: #555;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1em;
+            }
+        }
+        .filter-group {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 margin-bottom: 20px;
+                 padding-bottom: 20px;
+            }
+        }
+        .filter-group label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1.1em;
+            }
+        }
+        .checkbox-group, .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.9em;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1em;
+                 gap: 20px;
+            }
+        }
+         .checkbox-group div, .radio-group div {
+             display: flex;
+             align-items: center;
+             gap: 5px;
+         }
+        .pet-image-gallery-placeholder {
+            width: 100%;
+            height: 250px;
+            background-color: #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #555;
+            font-size: 1em;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 height: 400px; /* Taller gallery on desktop */
+                 margin-bottom: 30px;
+            }
+        }
+        .pet-details-section {
+            margin-bottom: 20px;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 margin-bottom: 30px;
+            }
+        }
+        .pet-details-section p {
+            font-size: 1em;
+            color: #444;
+            margin-bottom: 8px;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1.1em;
+            }
+        }
+        .application-section {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 padding: 20px;
+                 margin-bottom: 30px;
+            }
+        }
+        .application-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.03);
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 padding: 20px;
+                 margin-bottom: 20px;
+            }
+        }
+        .application-item div {
+            margin-bottom: 5px;
+            font-size: 0.95em;
+            color: #333;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1.05em;
+            }
+        }
+         .listing-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 padding: 20px;
+                 margin-bottom: 20px;
+                 gap: 20px;
+            }
+        }
+        .listing-item .pet-image-placeholder {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            flex-shrink: 0;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 width: 80px;
+                 height: 80px;
+            }
+        }
+        .listing-details {
+            flex-grow: 1;
+        }
+        .listing-details h3 {
+             font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #333;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1.3em;
+            }
+        }
+        .listing-details p {
+            font-size: 0.9em;
+            color: #555;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1em;
+            }
+        }
+        .listing-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 gap: 15px;
+            }
+        }
+        .listing-actions .btn-secondary {
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            cursor: pointer;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 padding: 10px 15px;
+                 font-size: 0.9em;
+            }
+        }
+        .chat-history {
+            flex-grow: 1;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 height: 400px; /* Taller chat history */
+                 padding: 20px;
+                 gap: 15px;
+            }
+        }
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 0.95em;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 font-size: 1em;
+            }
+        }
+        .message.incoming {
+            background-color: #e0e0e0;
+            align-self: flex-start;
+        }
+        .message.outgoing {
+            background-color: #a78bfa;
+            color: white;
+            align-self: flex-end;
+        }
+        .message-input-area {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 gap: 15px;
+            }
+        }
+        .message-input-area .input-field {
+            flex-grow: 1;
+            border-radius: 18px;
+        }
+        .message-input-area .btn-send {
+            background-color: #a78bfa;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 18px;
+            cursor: pointer;
+             flex-shrink: 0;
+
+             /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 padding: 12px 20px;
+            }
+        }
+         .donation-options .radio-group {
+             flex-direction: column;
+         }
+         .donation-options .flex-center {
+             display: flex;
+             justify-content: center;
+             gap: 10px;
+
+              /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 gap: 15px;
+            }
+         }
+         .donation-options .flex-center .btn-secondary {
+             background-color: #eee;
+             color: #333;
+             padding: 8px 15px;
+             border-radius: 6px;
+             cursor: pointer;
+
+              /* --- Desktop Styles --- */
+            @media (min-width: 768px) {
+                 padding: 10px 20px;
+            }
+         }
+
+         /* Icons - using simple text placeholders for now */
+         .icon {
+             display: inline-block;
+             width: 20px;
+             height: 20px;
+             text-align: center;
+
+             @media (min-width: 768px) {
+                 width: 25px;
+                 height: 25px;
+                 font-size: 1.5em;
+             }
+         }
+
+         /* Hide mobile-specific elements on desktop */
+         @media (min-width: 768px) {
+             .header .icon:first-child, /* Hide menu icon */
+             .header .icon:last-child, /* Hide search icon on home/browse if sidebar search is used */
+             .screen#browse-screen .header .icon:last-child /* Hide filter icon if filters are in sidebar */
+              {
+                 display: none;
+             }
+             /* Show search input directly in desktop header */
+             .header .desktop-search-input {
+                 display: block;
+                 flex-grow: 1;
+                 margin-left: 20px;
+             }
+         }
+
+          /* Show mobile-specific elements on mobile */
+         @media (max-width: 767px) {
+             .header .desktop-search-input {
+                 display: none;
+             }
+         }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <div class="sidebar-nav" id="sidebar-nav">
+            <h2 class="text-2xl font-bold text-purple-700 mb-6">Pet Adoption</h2>
+             <div class="nav-item active" data-screen="home-screen">Home</div>
+            <div class="nav-item" data-screen="browse-screen">Browse Pets</div>
+            <div class="nav-item" data-screen="my-applications-screen">My Applications</div>
+            <div class="nav-item" data-screen="donate-screen">Donate</div>
+            <div class="nav-item" data-screen="profile-screen">Profile</div>
+             </div>
+
+
+        <div id="auth-screen" class="screen active">
+            <div class="flex flex-col items-center justify-center h-full">
+                <h1 class="text-3xl font-bold text-purple-700 mb-6">Pet Adoption</h1>
+                <div class="text-center text-lg font-bold mb-8">App Logo/Title</div>
+
+                <input type="email" placeholder="Email/Username" class="input-field mb-4">
+                <input type="password" placeholder="Password" class="input-field mb-6">
+
+                <button class="btn-primary w-full mb-4" onclick="showScreen('home-screen')">Login</button>
+
+                <a href="#" class="link-text mb-4">Forgot Password?</a>
+                <a href="#" class="link-text" onclick="showScreen('signup-screen')">Sign Up</a>
+
+                <div class="separator">--- Or login with ---</div>
+
+                <div class="social-buttons w-full">
+                    <button class="social-button"><span class="icon">G</span> Google</button>
+                    <button class="social-button"><span class="icon">f</span> Social Media</button>
+                </div>
+            </div>
+        </div>
+
+         <div id="signup-screen" class="screen">
+             <div class="header">
+                <span class="icon" onclick="showScreen('auth-screen')">&larr;</span>
+                <h1>Sign Up</h1>
+                <span></span>
+                 <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+            <div class="flex flex-col flex-grow justify-center">
+                <input type="text" placeholder="Full Name" class="input-field mb-4">
+                <input type="email" placeholder="Email" class="input-field mb-4">
+                <input type="password" placeholder="Password" class="input-field mb-4">
+                 <input type="password" placeholder="Confirm Password" class="input-field mb-6">
+                 <button class="btn-primary w-full" onclick="showScreen('home-screen')">Create Account</button>
+            </div>
+        </div>
+
+
+        <div id="home-screen" class="screen">
+            <div class="header">
+                <span class="icon" onclick="toggleMenu()">&#9776;</span> <h1>Pet Adoption</h1>
+                <span class="icon" onclick="showScreen('browse-screen')">&#128269;</span> <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+            <div class="flex flex-col flex-grow">
+                <h2 class="text-xl font-bold mt-4 mb-4 md:text-2xl">Welcome, [User Name]!</h2>
+
+                <div class="section-title">Featured Pets</div>
+                <div class="pet-grid"> <div class="pet-card" onclick="showScreen('pet-detail-screen')">
+                        <div class="pet-image-placeholder">Pet Image</div>
+                        <h3>Buddy</h3>
+                        <p>Golden Retriever, 2 Years, New York</p>
+                    </div>
+                     <div class="pet-card" onclick="showScreen('pet-detail-screen')">
+                        <div class="pet-image-placeholder">Pet Image</div>
+                        <h3>Luna</h3>
+                        <p>Siamese Cat, 1 Year, Los Angeles</p>
+                    </div>
+                     <div class="pet-card" onclick="showScreen('pet-detail-screen')">
+                        <div class="pet-image-placeholder">Pet Image</div>
+                        <h3>Max</h3>
+                        <p>German Shepherd, 3 Years, Chicago</p>
+                    </div>
+                </div>
+                <button class="btn-primary w-full mt-4 md:w-auto md:self-center md:px-8" onclick="showScreen('browse-screen')">View All Pets</button>
+
+                <div class="section-title">Quick Links</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4"> <button class="btn-primary w-full" onclick="showScreen('browse-screen')">Browse Pets</button>
+                    <button class="btn-primary w-full" onclick="showScreen('my-applications-screen')">My Applications</button>
+                    <button class="btn-primary w-full" onclick="showScreen('donate-screen')">Donate</button>
+                </div>
+            </div>
+             <div class="navigation-bar"> <div class="navigation-item active" data-screen="home-screen">Home</div>
+                <div class="navigation-item" data-screen="browse-screen">Search</div>
+                <div class="navigation-item" data-screen="my-applications-screen">Applications</div>
+                <div class="navigation-item" data-screen="profile-screen">Profile</div>
+            </div>
+        </div>
+
+        <div id="browse-screen" class="screen">
+             <div class="header">
+                <span class="icon" onclick="showScreen('home-screen')">&larr;</span> <h1>Browse Pets</h1>
+                <span class="icon" onclick="showScreen('filter-screen')">&#9776;</span> <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+             <div class="flex flex-col flex-grow">
+                <input type="text" placeholder="Search for a pet..." class="input-field my-4 md:hidden">
+
+                <div class="text-sm text-gray-600 mb-4 md:hidden">Filter/Sort Options (Tap filter icon)</div>
+
+                <div class="section-title">Pet Listings</div>
+                <div class="pet-grid"> <div class="pet-card" onclick="showScreen('pet-detail-screen')">
+                        <div class="pet-image-placeholder">Pet Image</div>
+                        <h3>Max</h3>
+                        <p>German Shepherd, 3 Years, Chicago</p>
+                    </div>
+                     <div class="pet-card" onclick="showScreen('pet-detail-screen')">
+                        <div class="pet-image-placeholder">Pet Image</div>
+                        <h3>Whiskers</h3>
+                        <p>Tabby Cat, 6 Months, Houston</p>
+                    </div>
+                     <div class="pet-card" onclick="showScreen('pet-detail-screen')">
+                        <div class="pet-image-placeholder">Pet Image</div>
+                        <h3>Rocky</h3>
+                        <p>Bulldog, 4 Years, Miami</p>
+                    </div>
+                     <div class="pet-card" onclick="showScreen('pet-detail-screen')">
+                        <div class="pet-image-placeholder">Pet Image</div>
+                        <h3>Daisy</h3>
+                        <p>Beagle, 1 Year, Denver</p>
+                    </div>
+                     <div class="pet-card" onclick="showScreen('pet-detail-screen')">
+                        <div class="pet-image-placeholder">Pet Image</div>
+                        <h3>Shadow</h3>
+                        <p>Black Cat, 2 Years, Seattle</p>
+                    </div>
+                </div>
+                <div class="text-center text-gray-500 text-sm mt-4">... Scroll for more ...</div>
+             </div>
+             <div class="navigation-bar"> <div class="navigation-item" data-screen="home-screen">Home</div>
+                <div class="navigation-item active" data-screen="browse-screen">Search</div>
+                <div class="navigation-item" data-screen="my-applications-screen">Applications</div>
+                <div class="navigation-item" data-screen="profile-screen">Profile</div>
+            </div>
+        </div>
+
+         <div id="filter-screen" class="screen">
+             <div class="header">
+                <span class="icon" onclick="showScreen('browse-screen')">&larr;</span>
+                <h1>Filters</h1>
+                <span></span>
+                 <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+            <div class="flex flex-col flex-grow">
+                <div class="filter-group">
+                    <label>Pet Type:</label>
+                    <div class="checkbox-group">
+                        <div><input type="checkbox"> Dog</div>
+                        <div><input type="checkbox"> Cat</div>
+                        <div><input type="checkbox"> Other</div>
+                    </div>
+                </div>
+                 <div class="filter-group">
+                    <label>Breed:</label>
+                    <input type="text" placeholder="Select Breed" class="input-field">
+                </div>
+                <div class="filter-group">
+                    <label>Age:</label>
+                    <div class="checkbox-group">
+                        <div><input type="checkbox"> Puppy</div>
+                        <div><input type="checkbox"> Adult</div>
+                        <div><input type="checkbox"> Senior</div>
+                    </div>
+                </div>
+                 <div class="filter-group">
+                    <label>Size:</label>
+                    <div class="checkbox-group">
+                        <div><input type="checkbox"> Small</div>
+                        <div><input type="checkbox"> Medium</div>
+                        <div><input type="checkbox"> Large</div>
+                    </div>
+                </div>
+                 <div class="filter-group">
+                    <label>Location:</label>
+                     <input type="text" placeholder="Enter Location" class="input-field">
+                </div>
+            </div>
+             <button class="btn-primary w-full mb-3" onclick="showScreen('browse-screen')">Apply Filters</button>
+             <button class="btn-primary w-full bg-gray-400 hover:bg-gray-500" onclick="showScreen('browse-screen')">Clear Filters</button>
+        </div>
+
+
+        <div id="pet-detail-screen" class="screen">
+            <div class="header">
+                <span class="icon" onclick="showScreen('browse-screen')">&larr;</span> <h1>Pet Details</h1>
+                <span></span>
+                 <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+            <div class="flex flex-col flex-grow">
+                 <div class="pet-image-gallery-placeholder">Pet Image Gallery</div>
+
+                <h2 class="text-2xl font-bold text-purple-700 mb-2 md:text-3xl">Buddy</h2>
+                <p class="text-gray-600 text-sm mb-4 md:text-base">Golden Retriever, 2 Years, New York</p>
+
+                <div class="section-title">About Buddy:</div>
+                <p class="pet-details-section">
+                    Buddy is a friendly and energetic Golden Retriever looking for a loving home.
+                    He enjoys playing fetch and going for long walks. He is good with children and other dogs.
+                </p>
+
+                 <div class="section-title">Health Information:</div>
+                <p class="pet-details-section">
+                    Vaccinated: Yes<br>
+                    Spayed/Neutered: Yes<br>
+                    Microchipped: Yes<br>
+                    Notes: Healthy and up-to-date on all shots.
+                </p>
+
+                 <div class="section-title">Personality/Temperament:</div>
+                <p class="pet-details-section">
+                    Playful, Loyal, Friendly, Energetic, Good with Kids.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4"> <button class="btn-primary w-full" onclick="showScreen('chat-screen')">Contact Shelter/Owner</button>
+                    <button class="btn-primary w-full" onclick="showScreen('application-form-screen')">Submit Adoption Application</button>
+                    <button class="btn-primary w-full bg-gray-400 hover:bg-gray-500">Favorite/Save</button>
+                </div>
+            </div>
+             <div class="navigation-bar"> <div class="navigation-item" data-screen="home-screen">Home</div>
+                <div class="navigation-item active" data-screen="browse-screen">Search</div>
+                <div class="navigation-item" data-screen="my-applications-screen">Applications</div>
+                <div class="navigation-item" data-screen="profile-screen">Profile</div>
+            </div>
+        </div>
+
+        <div id="application-form-screen" class="screen">
+             <div class="header">
+                <span class="icon" onclick="showScreen('pet-detail-screen')">&larr;</span> <h1>Adoption Application</h1>
+                <span></span>
+                 <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+            <div class="flex flex-col flex-grow">
+                <h2 class="text-lg font-bold mb-4 md:text-xl">Applying for: Buddy</h2>
+
+                <div class="application-section">
+                    <div class="section-title !mt-0">Section 1: Personal Info</div>
+                    <input type="text" placeholder="Full Name" class="input-field mb-3">
+                    <input type="text" placeholder="Address" class="input-field mb-3">
+                    <input type="text" placeholder="Phone Number" class="input-field mb-3">
+                    <input type="email" placeholder="Email Address" class="input-field">
+                </div>
+
+                 <div class="application-section">
+                    <div class="section-title !mt-0">Section 2: Living Situation</div>
+                    <input type="text" placeholder="Type of Home (House, Apt, etc.)" class="input-field mb-3">
+                    <input type="text" placeholder="Yard Size (if applicable)" class="input-field mb-3">
+                    <input type="text" placeholder="Other Pets (Type, Breed, Age)" class="input-field">
+                </div>
+
+                 <div class="application-section">
+                    <div class="section-title !mt-0">Section 3: Experience</div>
+                    <textarea placeholder="Previous Pet Ownership Experience" class="input-field mb-3 h-20 md:h-24"></textarea>
+                    <textarea placeholder="Experience with this Breed (if any)" class="input-field h-20 md:h-24"></textarea>
+                </div>
+
+                 <div class="application-section">
+                    <div class="section-title !mt-0">Section 4: References</div>
+                    <input type="text" placeholder="Reference 1 Name & Contact" class="input-field mb-3">
+                    <input type="text" placeholder="Reference 2 Name & Contact" class="input-field">
+                </div>
+
+                <div class="flex items-center mt-4 mb-6">
+                    <input type="checkbox" id="agreement" class="mr-2">
+                    <label for="agreement" class="text-sm text-gray-700">I agree to the terms and conditions.</label>
+                </div>
+
+                <button class="btn-primary w-full" onclick="showScreen('my-applications-screen')">Submit Application</button>
+            </div>
+             <div class="navigation-bar"> <div class="navigation-item" data-screen="home-screen">Home</div>
+                <div class="navigation-item" data-screen="browse-screen">Search</div>
+                <div class="navigation-item active" data-screen="my-applications-screen">Applications</div>
+                <div class="navigation-item" data-screen="profile-screen">Profile</div>
+            </div>
+        </div>
+
+        <div id="my-applications-screen" class="screen">
+             <div class="header">
+                <span class="icon" onclick="showScreen('home-screen')">&larr;</span> <h1>My Applications</h1>
+                <span></span>
+                 <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+            <div class="flex flex-col flex-grow">
+                <div class="section-title">Your Adoption Applications:</div>
+
+                <div class="application-item">
+                    <div>Pet: Buddy (Golden Retriever)</div>
+                    <div>Status: <span class="font-bold text-yellow-600">Pending</span></div>
+                    <button class="btn-primary w-full mt-3 !py-2 bg-gray-400 hover:bg-gray-500">View Details</button>
+                </div>
+
+                 <div class="application-item">
+                    <div>Pet: Max (German Shepherd)</div>
+                    <div>Status: <span class="font-bold text-green-600">Approved</span></div>
+                     <button class="btn-primary w-full mt-3 !py-2 bg-gray-400 hover:bg-gray-500">View Details</button>
+                </div>
+
+                 <div class="application-item">
+                    <div>Pet: Whiskers (Tabby Cat)</div>
+                    <div>Status: <span class="font-bold text-red-600">Rejected</span></div>
+                     <button class="btn-primary w-full mt-3 !py-2 bg-gray-400 hover:bg-gray-500">View Details</button>
+                </div>
+
+                <div class="text-center text-gray-500 text-sm mt-4">... Scroll for more ...</div>
+            </div>
+             <div class="navigation-bar"> <div class="navigation-item" data-screen="home-screen">Home</div>
+                <div class="navigation-item" data-screen="browse-screen">Search</div>
+                <div class="navigation-item active" data-screen="my-applications-screen">Applications</div>
+                <div class="navigation-item" data-screen="profile-screen">Profile</div>
+            </div>
+        </div>
+
+         <div id="my-listings-screen" class="screen">
+             <div class="header">
+                <span class="icon" onclick="showScreen('profile-screen')">&larr;</span> <h1>My Listings</h1>
+                <span class="icon">+</span> <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+             <div class="flex flex-col flex-grow">
+                <div class="section-title">Your Listed Pets:</div>
+
+                <div class="listing-item">
+                    <div class="pet-image-placeholder">Image</div>
+                    <div class="listing-details">
+                        <h3>Buddy</h3>
+                        <p>Status: <span class="font-bold text-green-600">Available</span></p>
+                    </div>
+                    <div class="listing-actions">
+                        <button class="btn-secondary">View/Edit</button>
+                        <button class="btn-secondary">Applications</button>
+                    </div>
+                </div>
+
+                 <div class="listing-item">
+                    <div class="pet-image-placeholder">Image</div>
+                    <div class="listing-details">
+                        <h3>Luna</h3>
+                        <p>Status: <span class="font-bold text-red-600">Adopted</span></p>
+                    </div>
+                     <div class="listing-actions">
+                        <button class="btn-secondary">View/Edit</button>
+                        <button class="btn-secondary">Applications</button>
+                    </div>
+                </div>
+
+                <div class="text-center text-gray-500 text-sm mt-4">... Scroll for more ...</div>
+            </div>
+             <div class="navigation-bar"> <div class="navigation-item" data-screen="home-screen">Home</div>
+                <div class="navigation-item" data-screen="browse-screen">Search</div>
+                <div class="navigation-item" data-screen="my-applications-screen">Applications</div>
+                <div class="navigation-item active" data-screen="profile-screen">Profile</div>
+            </div>
+        </div>
+
+        <div id="chat-screen" class="screen">
+             <div class="header">
+                <span class="icon" onclick="showScreen('pet-detail-screen')">&larr;</span> <h1>Chat with Shelter</h1>
+                <span></span>
+                 <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+            <div class="chat-history">
+                <div class="message incoming">Hi! I'm interested in Buddy. Is he still available?</div>
+                <div class="message outgoing">Yes, Buddy is still looking for his forever home! What questions do you have?</div>
+                <div class="message incoming">How is he with other dogs?</div>
+                <div class="message outgoing">Buddy is very social and loves playing with other dogs.</div>
+                 <div class="message incoming">Great! Can I schedule a visit?</div>
+            </div>
+            <div class="message-input-area">
+                <input type="text" placeholder="Type a message..." class="input-field">
+                <button class="btn-send">Send</button>
+            </div>
+             <div class="navigation-bar"> <div class="navigation-item" data-screen="home-screen">Home</div>
+                <div class="navigation-item" data-screen="browse-screen">Search</div>
+                <div class="navigation-item" data-screen="my-applications-screen">Applications</div>
+                <div class="navigation-item" data-screen="profile-screen">Profile</div>
+            </div>
+        </div>
+
+        <div id="donate-screen" class="screen">
+             <div class="header">
+                <span class="icon" onclick="showScreen('home-screen')">&larr;</span> <h1>Donate</h1>
+                <span></span>
+                 <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+            <div class="flex flex-col flex-grow">
+                <h2 class="text-xl font-bold text-center text-purple-700 mb-6 md:text-2xl">Support Our Cause!</h2>
+
+                <div class="section-title">Donate to:</div>
+                <div class="donation-options mb-6">
+                    <div class="radio-group">
+                        <div><input type="radio" name="donate-to"> A Specific Shelter</div>
+                        <div><input type="radio" name="donate-to"> A Specific Pet</div>
+                        <div><input type="radio" name="donate-to" checked> General Fund</div>
+                    </div>
+                     <input type="text" placeholder="Search Shelter/Pet (if applicable)" class="input-field mt-3">
+                </div>
+
+                 <div class="section-title">Donation Amount:</div>
+                 <input type="number" placeholder="Enter Amount" class="input-field mb-4">
+                 <div class="flex-center mb-6">
+                     <button class="btn-secondary">$10</button>
+                     <button class="btn-secondary">$25</button>
+                     <button class="btn-secondary">$50</button>
+                 </div>
+
+                 <div class="section-title">Payment Method:</div>
+                 <input type="text" placeholder="Credit Card Number" class="input-field mb-3">
+                 <input type="text" placeholder="Expiry Date (MM/YY)" class="input-field mb-3">
+                 <input type="text" placeholder="CVV" class="input-field mb-6">
+                 <div class="text-sm text-gray-600 text-center">Other Payment Options (e.g., PayPal, etc.)</div>
+            </div>
+            <button class="btn-primary w-full mt-auto">Donate Now</button>
+             <div class="navigation-bar"> <div class="navigation-item" data-screen="home-screen">Home</div>
+                <div class="navigation-item" data-screen="browse-screen">Search</div>
+                <div class="navigation-item" data-screen="my-applications-screen">Applications</div>
+                <div class="navigation-item" data-screen="profile-screen">Profile</div>
+            </div>
+        </div>
+
+         <div id="profile-screen" class="screen">
+             <div class="header">
+                <span class="icon" onclick="showScreen('home-screen')">&larr;</span> <h1>Profile</h1>
+                <span></span>
+                 <input type="text" placeholder="Search pets..." class="input-field desktop-search-input">
+            </div>
+             <div class="flex flex-col flex-grow items-center justify-center">
+                <div class="pet-image-placeholder !w-32 !h-32 rounded-full mb-6 md:!w-40 md:!h-40">User Photo</div>
+                <h2 class="text-2xl font-bold text-purple-700 mb-2 md:text-3xl">[User Name]</h2>
+                <p class="text-gray-600 mb-6 md:text-lg">[User Email]</p>
+
+                <button class="btn-primary w-full mb-3 md:w-2/3" onclick="showScreen('my-applications-screen')">View My Applications</button>
+                 <button class="btn-primary w-full mb-3 md:w-2/3" onclick="showScreen('my-listings-screen')">View My Listings (Shelter/Owner)</button>
+                 <button class="btn-primary w-full mb-3 bg-gray-400 hover:bg-gray-500 md:w-2/3">Edit Profile</button>
+                 <button class="btn-primary w-full bg-red-500 hover:bg-red-600 md:w-2/3" onclick="showScreen('auth-screen')">Logout</button>
+            </div>
+             <div class="navigation-bar"> <div class="navigation-item" data-screen="home-screen">Home</div>
+                <div class="navigation-item" data-screen="browse-screen">Search</div>
+                <div class="navigation-item" data-screen="my-applications-screen">Applications</div>
+                <div class="navigation-item active" data-screen="profile-screen">Profile</div>
+            </div>
+        </div>
+
+
+    </div> <script>
+        // JavaScript for screen navigation
+        const screens = document.querySelectorAll('.screen');
+        const navItems = document.querySelectorAll('.navigation-item');
+        const sidebarNavItems = document.querySelectorAll('.sidebar-nav .nav-item');
+
+        function showScreen(screenId) {
+            // Hide all screens
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show the requested screen
+            const activeScreen = document.getElementById(screenId);
+            if (activeScreen) {
+                activeScreen.classList.add('active');
+            }
+
+            // Update active mobile navigation item
+            navItems.forEach(item => {
+                if (item.dataset.screen === screenId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+             // Update active desktop sidebar navigation item
+            sidebarNavItems.forEach(item => {
+                if (item.dataset.screen === screenId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+
+             // Special handling for screens not in the main nav
+            if (screenId === 'auth-screen' || screenId === 'signup-screen' || screenId === 'filter-screen' || screenId === 'pet-detail-screen' || screenId === 'application-form-screen' || screenId === 'chat-screen' || screenId === 'my-listings-screen') {
+                 // No mobile nav item active for these screens
+                 navItems.forEach(item => item.classList.remove('active'));
+                 // No sidebar nav item active for these screens (except maybe browse/profile depending on flow)
+                 // For simplicity, removing active state from all sidebar items for these specific screens
+                 if (screenId !== 'browse-screen' && screenId !== 'profile-screen' && screenId !== 'my-applications-screen' && screenId !== 'donate-screen') {
+                     sidebarNavItems.forEach(item => item.classList.remove('active'));
+                 }
+            }
+
+
+        }
+
+        // Add click listeners to mobile navigation items
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const screenId = item.dataset.screen;
+                if (screenId) {
+                    showScreen(screenId);
+                }
+            });
+        });
+
+         // Add click listeners to desktop sidebar navigation items
+        sidebarNavItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const screenId = item.dataset.screen;
+                if (screenId) {
+                    showScreen(screenId);
+                }
+            });
+        });
+
+
+        // Initial screen to show
+        // Check screen width on load and resize to determine initial screen and layout
+        function initializeLayout() {
+            if (window.innerWidth >= 768) {
+                // Desktop layout
+                showScreen('home-screen'); // Start with home screen on desktop
+                document.querySelector('.app-container').classList.add('flex-row');
+                 document.getElementById('sidebar-nav').style.display = 'flex';
+
+            } else {
+                // Mobile layout
+                 showScreen('auth-screen'); // Start with auth screen on mobile
+                 document.querySelector('.app-container').classList.remove('flex-row');
+                 document.getElementById('sidebar-nav').style.display = 'none';
+            }
+        }
+
+        // Initialize layout on load
+        window.onload = initializeLayout;
+
+        // Re-initialize layout on window resize
+        window.addEventListener('resize', initializeLayout);
+
+
+         // Basic toggle for a hypothetical side menu (not fully implemented)
+         function toggleMenu() {
+             alert("Menu toggled (feature not fully implemented in this basic UI)");
+         }
+
+    </script>
+
+</body>
+</html>
